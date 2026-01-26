@@ -14,11 +14,14 @@ st.set_page_config(
     page_title="株シグナルMVP",
     page_icon="📈",
     layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-st.title("株シグナルMVP（RSI/MACD + 下落後リターン統計）")
+st.title("株シグナルMVP")
 st.caption("※売買の“指示”ではなく、判断材料を提示します（無料データ / Streamlit MVP）。")
 
+st.markdown("""
+""", unsafe_allow_html=True)
 
 st.markdown(
     """
@@ -32,13 +35,14 @@ st.markdown(
 
     /* タイトル（st.title） */
     h1 {
-        font-size: 2.0rem;
+        font-size: 1.3rem !important;
+        line-height: 1.2;
         margin-bottom: 1.0rem;
     }
 
     /* セクション見出し（st.header） */
     h2 {
-        font-size: 1.5rem;
+        font-size: 1.0rem;
         margin-top: 2.0rem;
         margin-bottom: 0.8rem;
     }
@@ -85,6 +89,15 @@ st.markdown(
     unsafe_allow_html=True,
     
 )
+st.markdown("""
+<style>
+/* dataframeのSearchボックスを非表示 */
+[data-testid="stDataFrameSearch"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 
 
@@ -371,6 +384,11 @@ def fetch_ohlcv_yf(code: str, period: str = "2y") -> pd.DataFrame:
 
     raise RuntimeError(f"価格データ取得に失敗: {code}（yfinance） / {last_err}")
 
+@st.cache_data(ttl=60*30)  # 30分キャッシュ
+def fetch_cached(code: str, period: str):
+    return fetch_ohlcv_yf(code, period=period)
+
+
 # =========================
 # 5) UI
 # =========================
@@ -405,7 +423,8 @@ def indicator_panel(close: pd.Series):
 
 def main():
     st.set_page_config(page_title="株シグナルMVP（RSI/MACD + DD統計）", layout="wide")
-    st.title("株シグナルMVP（RSI/MACD + 下落後リターン統計）")
+    st.title("株シグナルMVP")
+    
     st.caption("※売買の“指示”ではなく、判断材料を提示します（無料データ / Streamlit MVP）。")
 
     with st.sidebar:
